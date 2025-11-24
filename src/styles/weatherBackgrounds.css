@@ -1,0 +1,338 @@
+/* ----- LAYOUT GENERAL ----- */
+.app-wrapper {
+  min-height: 100vh;
+  width: 100%;
+  padding: 2.5rem 1.5rem 3rem;
+  display: flex;
+  justify-content: center;
+  transition: background 0.6s ease;
+}
+
+.theme-light .app-wrapper {
+  background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.85), rgba(214, 226, 255, 0.65)),
+    linear-gradient(135deg, #eff6ff, #f5f3ff);
+  color: #0f172a;
+}
+
+.theme-dark .app-wrapper {
+  background: radial-gradient(circle at 80% 0%, rgba(56, 189, 248, 0.2), transparent 55%),
+    linear-gradient(135deg, #020617, #0f172a 60%, #0b1120);
+  color: #f8fafc;
+}
+
+.app-content {
+  width: 100%;
+  max-width: 1200px;
+}
+
+/* ----- PANEL GENÉRICO / GLASS UI ----- */
+.glass-panel,
+.card-panel {
+  position: relative;
+  border-radius: 20px;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.glass-panel:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+}
+
+.theme-dark .glass-panel,
+.theme-dark .card-panel {
+  background: rgba(15, 23, 42, 0.55);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  box-shadow: 0 12px 32px rgba(2, 6, 23, 0.6);
+  color: #f8fafc;
+}
+
+.glass-toolbar {
+  gap: 1rem;
+}
+
+.glass-toolbar h1 {
+  margin: 0;
+}
+
+.weather-panels {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (min-width: 992px) {
+  .weather-panels {
+    gap: 2rem;
+  }
+}
+
+/* ----- FORMULARIOS Y BOTONES ----- */
+.form-control {
+  border-radius: 16px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  background: rgba(255, 255, 255, 0.65);
+  padding: 0.85rem 1.1rem;
+  color: inherit;
+  backdrop-filter: blur(12px) saturate(180%);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.theme-dark .form-control {
+  background: rgba(15, 23, 42, 0.75);
+  border-color: rgba(148, 163, 184, 0.3);
+  color: #f8fafc;
+}
+
+.form-control:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.35);
+  outline: none;
+}
+
+.input-group > .btn {
+  border-radius: 16px;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  background: rgba(56, 189, 248, 0.15);
+  color: #0369a1;
+}
+
+.status-pill.error {
+  background: rgba(248, 113, 113, 0.1);
+  color: #b91c1c;
+}
+
+.status-pill.subtle {
+  background: rgba(226, 232, 240, 0.4);
+  color: inherit;
+}
+
+/* ----- PANEL "AHORA" CON FONDO DINÁMICO ----- */
+.now-card {
+  position: relative;
+  overflow: hidden;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.now-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  background: var(--now-card-bg, linear-gradient(135deg, #4f46e5, #0ea5e9));
+  opacity: 0.95;
+  z-index: 0;
+  filter: saturate(120%);
+}
+
+.now-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.35), transparent 45%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.now-card > * {
+  position: relative;
+  z-index: 2;
+}
+
+.now-card img {
+  filter: drop-shadow(0 6px 14px rgba(15, 23, 42, 0.45));
+}
+
+/* ----- HOUR CARDS ----- */
+.section-title {
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.hourly-track {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 0.75rem;
+  scrollbar-width: thin;
+}
+
+.hourly-track::-webkit-scrollbar {
+  height: 6px;
+}
+
+.hourly-track::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.2);
+  border-radius: 999px;
+}
+
+.hour-card {
+  min-width: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.hour-card__title {
+  font-weight: 600;
+  margin: 0;
+}
+
+.hour-card__temp {
+  font-weight: 500;
+  margin: 0;
+}
+
+.hour-card__wind {
+  margin: 0;
+  font-size: 0.85rem;
+  opacity: 0.75;
+}
+
+/* ----- DAILY GRID ----- */
+.daily-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.day-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.day-card__name {
+  font-weight: 600;
+  margin: 0;
+}
+
+.day-card__date {
+  margin: 0;
+  opacity: 0.75;
+  text-transform: capitalize;
+}
+
+.day-card__temps {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+}
+
+/* ----- FAVORITOS ----- */
+.favorites-panel {
+  padding: 1.25rem 1.5rem;
+}
+
+.favorites-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.favorite-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.favorite-name {
+  flex: 1;
+  border: none;
+  background: transparent;
+  text-align: left;
+  font-weight: 600;
+  color: inherit;
+  cursor: pointer;
+}
+
+.favorite-name:hover {
+  opacity: 0.8;
+}
+
+.favorite-delete {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  background: transparent;
+  color: #b91c1c;
+  font-weight: 700;
+  line-height: 1;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  transition: background 0.2s ease;
+}
+
+.favorite-delete:hover {
+  background: rgba(248, 113, 113, 0.15);
+}
+
+.favorites-empty {
+  margin-top: 0.75rem;
+  opacity: 0.7;
+}
+
+/* ----- AUTOCOMPLETE ----- */
+.autocomplete-results {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 0.75rem;
+  padding: 0.4rem 0;
+  list-style: none;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.autocomplete-item {
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.autocomplete-item:last-child {
+  border-bottom: none;
+}
+
+.autocomplete-item:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.theme-dark .autocomplete-item:hover {
+  background: rgba(148, 163, 184, 0.15);
+}
+
+/* ----- ANIMACIONES ----- */
+.fade-in {
+  animation: fadeIn 0.6s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
