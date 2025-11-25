@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useWeather } from './hooks/useWeather';
 import HourlyForecast from './components/hourlyForecast';
 import DailyForecast from './components/dailyForecast';
@@ -20,6 +20,7 @@ function App() {
 
   const [cityName, setCityName] = useState("");
   const [favorites, setFavorites] = useState<FavoriteCity[]>([]);
+  const [currentCityLabel, setCurrentCityLabel] = useState("Montevideo, Uruguay");
   const { data, loading, error } = useWeather(coords.lat, coords.lon);
   const nowCardRef = useRef<HTMLDivElement | null>(null);
   const [transitionKey, setTransitionKey] = useState(0);
@@ -38,8 +39,11 @@ function App() {
     setTransitionKey(prev => prev + 1);
   }, [coords.lat, coords.lon]);
 
-  const handleCitySelect = (lat: number, lon: number) => {
+  const handleCitySelect = (lat: number, lon: number, label?: string) => {
     setCoords({ lat, lon });
+    if (label) {
+      setCurrentCityLabel(label);
+    }
   };
 
   const addFavorite = () => {
@@ -66,20 +70,45 @@ function App() {
 
   const selectFavorite = (city: FavoriteCity) => {
     setCoords({ lat: city.lat, lon: city.lon });
+    setCurrentCityLabel(city.name);
   };
 
   const getLocation = () => {
     if (!navigator.geolocation) return alert('Geolocation no soportada');
     navigator.geolocation.getCurrentPosition(
-      pos => setCoords({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
+      pos => {
+        setCoords({ lat: pos.coords.latitude, lon: pos.coords.longitude });
+        setCurrentCityLabel("Ubicación actual");
+      },
       () => alert('Permiso denegado o error')
     );
   };
 
+  const formattedCurrentTime = useMemo(() => {
+    if (!data?.current_weather?.time) return "";
+    try {
+      const date = new Date(data.current_weather.time);
+      const formatter = new Intl.DateTimeFormat("es-UY", {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+      return formatter.format(date);
+    } catch {
+      return data.current_weather.time;
+    }
+  }, [data?.current_weather?.time]);
+
+  const currentTimeDisplay = formattedCurrentTime
+    ? `${formattedCurrentTime}${data?.timezone_abbreviation ? ` (${data.timezone_abbreviation})` : ""}`
+    : "";
+
   return (
     <div className="app-wrapper">
       <div className="app-content">
-        <header className="glass-panel glass-toolbar d-flex justify-content-between align-items-center mb-4">
+        <header className="glass-panel glass-toolbar d-flex justify-content-between align-items-center mb-3">
           <h1 className="fw-bold">Weather App</h1>
 
           <div className="d-flex gap-2">
@@ -92,6 +121,11 @@ function App() {
             </button>
           </div>
         </header>
+
+        <div className="current-city-chip glass-panel subtle-chip mb-4">
+          <i className="bi bi-geo-alt-fill" aria-hidden="true"></i>
+          <span>{currentCityLabel}</span>
+        </div>
 
         <CityAutocomplete onSelect={handleCitySelect} />
 
@@ -114,7 +148,7 @@ function App() {
         <div key={transitionKey} className="weather-panels fade-in">
           {data?.current_weather && (
             <div className="mt-4 p-4 glass-panel now-card text-white" ref={nowCardRef}>
-              <h2 className="mb-3 d-flex align-items-center gap-2">
+              <h2 className="mb-2 d-flex align-items-center gap-2">
                 Ahora
                 <img
                   src={getWeatherIconUrl(data.current_weather.weathercode)}
@@ -122,9 +156,28 @@ function App() {
                   style={{ width: "48px" }}
                 />
               </h2>
-              <p><strong>Temperatura:</strong> {data.current_weather.temperature} °C</p>
-              <p><strong>Viento:</strong> {data.current_weather.windspeed} m/s</p>
-              <p><strong>Hora:</strong> {data.current_weather.time}</p>
+
+              <div className="now-card__meta">
+                <span className="now-card__city">{currentCityLabel}</span>
+                {currentTimeDisplay && (
+                  <span className="now-card__time"></span>
+                )}
+              </div>
+
+              <div className="now-card__stat-grid">
+                <div className="now-card__stat-chip">
+                  <span>Temperatura</span>
+                  <strong>{data.current_weather.temperature} °C</strong>
+                </div>
+                <div className="now-card__stat-chip">
+                  <span>Viento</span>
+                  <strong>{data.current_weather.windspeed} m/s</strong>
+                </div>
+                <div className="now-card__stat-chip">
+                  <span>Última lectura</span>
+                  <strong>{currentTimeDisplay || data.current_weather.time}</strong>
+                </div>
+              </div>
             </div>
           )}
 

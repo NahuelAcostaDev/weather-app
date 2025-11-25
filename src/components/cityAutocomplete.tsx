@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 interface Props {
-  onSelect: (lat: number, lon: number) => void;
+  onSelect: (lat: number, lon: number, label?: string) => void;
 }
 
 const CityAutocomplete: React.FC<Props> = ({ onSelect }) => {
@@ -33,7 +33,9 @@ const CityAutocomplete: React.FC<Props> = ({ onSelect }) => {
   };
 
   const handleSelect = (city: any) => {
-    onSelect(city.latitude, city.longitude);
+    const labelParts = [city.name, city.admin1, city.country].filter(Boolean);
+    const label = labelParts.join(", ");
+    onSelect(city.latitude, city.longitude, label || city.name);
     setQuery("");
     setResults([]);
   };
